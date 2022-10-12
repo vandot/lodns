@@ -1,11 +1,11 @@
 # lodns
 lodns is as simple DNS server intended for local development.
 
-lodns obsoletes editing hosts file or installing and configuring manually dnsmasq.
+Obsoletes editing hosts file or installing and configuring manually dnsmasq.
 
-lodns is designed to respond to DNS queries for all subdomains of `.lo` TLD.
+It is designed to respond to DNS queries for all subdomains of `.lo` TLD.
 
-It supports both IPv4 and IPv6, lodns will respond accordingly to DNS queries accordingly, to A queries with 127.0.0.1 and to AAAA queries with ::1.
+Supports both IPv4 and IPv6, lodns will respond accordingly to DNS queries accordingly, to A queries with 127.0.0.1 and to AAAA queries with ::1.
 
 lodns will act only as a secondary DNS server dedicated to `.lo` TLD on every platform. For all other DNS queries still will be used default system DNS.
 
