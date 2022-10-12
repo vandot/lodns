@@ -1,11 +1,11 @@
 # lodns
 lodns is as simple DNS server intended for local development.
 
-Obsoletes editing hosts file or installing and configuring manually dnsmasq.
+Obsoletes editing hosts file or manually installing and configuring dnsmasq.
 
 It is designed to respond to DNS queries for all subdomains of `.lo` TLD.
 
-Supports both IPv4 and IPv6, lodns will respond accordingly to DNS queries accordingly, to A queries with 127.0.0.1 and to AAAA queries with ::1.
+Supports both IPv4 and IPv6, lodns will respond accordingly to DNS queries, to A queries with 127.0.0.1 and to AAAA queries with ::1.
 
 lodns will act only as a secondary DNS server dedicated to `.lo` TLD on every platform. For all other DNS queries still will be used default system DNS.
 
@@ -17,7 +17,7 @@ Download correct binary from the latest [release](https://github.com/vandot/lodn
 ## Configuration
 lodns comes preconfigured for all supported platforms to act as a secondary DNS server quired only for `.lo` domain.
 
-On MacOS and Linux you have to run with `sudo` to be able to configure system
+On MacOS and Linux you have to run with `sudo` to be able to configure the system
 ```
 sudo lodns install
 ```
