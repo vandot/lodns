@@ -17,7 +17,7 @@ jobs:
         uses: iffy/install-nim@v4.2.0
       - name: Install nimxc
         run: |
-          nimble install https://github.com/iffy/nimxc.git
+          nimble install -y https://github.com/iffy/nimxc.git
       - name: Build Linux
         run: |
           nimble build -r -d:release --opt:size
