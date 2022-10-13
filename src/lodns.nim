@@ -11,8 +11,8 @@ proc writeVersion() =
 proc writeHelp() =
   writeVersion()
   echo """
-  Run local DNS server on specified port that return 127.0.0.1 or ::1
-  for every request with lo TLD.
+  Run local DNS server that returns 127.0.0.1 or ::1
+  for every query with lo TLD.
 
   install       : install system files
   uninstall     : uninstall system files
