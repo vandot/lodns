@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.1"
+version       = "0.1.2"
 author        = "vandot"
 description   = "Simple DNS server for local development"
 license       = "MIT"
