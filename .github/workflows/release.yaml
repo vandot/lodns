@@ -29,6 +29,12 @@ jobs:
       - name: Build Windows
         run: |
           nimxc c --target=windows-amd64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-windows-amd64.exe -f src/lodns.nim
+      - name: Create packages
+        run: |
+          tar czf ./build/lodns-linux-amd64.tar.gz --directory=./build lodns-linux-amd64
+          tar czf ./build/lodns-darwin-amd64.tar.gz --directory=./build lodns-darwin-amd64
+          tar czf ./build/lodns-darwin-arm64.tar.gz --directory=./build lodns-darwin-arm64
+          7z a ./build/lodns-windows-amd64.zip ./build/lodns-windows-amd64.exe
       - name: Publish release
         uses: softprops/action-gh-release@v1
         if: success()
