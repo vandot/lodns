@@ -17,7 +17,8 @@ proc systemProbe*(): (string, int) =
       quit()
     var version = execProcess("systemd --version | head -1 | awk '{ print $2}'")
     version.stripLineEnd
-    ip = "169.254.1.1"
+    # IPv4 dummy address (RFC7600)
+    ip = "192.0.0.8"
     if parseInt(version) <= 245:
       port = 53
   when defined windows:
