@@ -1,4 +1,4 @@
-import std/[os, net, parseopt]
+import std/[os, parseopt]
 # Internal imports
 import ./lodns/[actions, server]
 
@@ -54,11 +54,11 @@ proc main() =
 
   if install or start:
     (ip, port) = systemProbe()
-  if install == true:
+  if install:
     install(ip, port, tld)
   if uninstall:
     uninstall(tld)
-  if start == true:
+  if start:
     serve(ip, port, tld)
   else:
     writeHelp()
