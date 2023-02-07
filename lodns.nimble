@@ -9,6 +9,8 @@ bin           = @["lodns"]
 
 binDir = "build"
 
+installExt = @["nim"]
+
 skipDirs = @[
   ".github",
 ]
