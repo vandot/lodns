@@ -1,6 +1,6 @@
 import std/[os, parseopt]
 # Internal imports
-import ./lodns/[actions, server]
+import ./lodnspkg/[actions, server]
 
 const tld = "lo"
 
