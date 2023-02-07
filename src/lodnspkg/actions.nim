@@ -1,8 +1,10 @@
-import std/[os, strutils]
-when defined linux:
-  import std/[osproc]
+import std/[strutils]
 when defined windows:
   import std/[osproc]
+when defined linux:
+  import std/[os, osproc]
+when defined macosx:
+  import std/[os]
 
 proc systemProbe*(): (string, int) =
   var ip = "127.0.0.1"
