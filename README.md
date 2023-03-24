@@ -1,5 +1,5 @@
 # lodns
-lodns is as simple DNS server intended for local development.
+lodns is a simple DNS server intended for local development.
 
 Obsoletes editing hosts file or manually installing and configuring dnsmasq.
 
