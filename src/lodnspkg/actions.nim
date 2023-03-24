@@ -16,7 +16,7 @@ proc systemProbe*(): (string, int) =
     active.stripLineEnd
     if systemd != "systemd" or active != "active":
       echo "linux initialization is supported only for systemd using systemd-resolved"
-      quit()
+      quit(1)
     var version = execProcess("systemd --version | head -1 | awk '{ print $2}'")
     version.stripLineEnd
     # IPv4 dummy address (RFC7600)
@@ -40,6 +40,7 @@ proc install*(ip: string, port: int, tld: string) =
     var exitCode = execCmd("systemctl restart systemd-networkd.service")
     if exitCode != 0:
       echo "systemctl restart systemd-networkd.service failed with code " & $exitCode
+      quit(1)
 
   when defined macosx:
     if not dirExists("/etc/resolver"):
@@ -52,7 +53,7 @@ proc install*(ip: string, port: int, tld: string) =
     var exitCode = execCmd(addCommand)
     if exitCode != 0:
       echo addCommand & " failed with code " & $exitCode
-  quit()
+      quit(1)
 
 proc uninstall*(tld: string) =
   when defined linux:
@@ -64,6 +65,7 @@ proc uninstall*(tld: string) =
     exitCode = execCmd("systemctl restart systemd-networkd.service")
     if exitCode != 0:
       echo "systemctl restart systemd-networkd.service failed with code " & $exitCode
+      quit(1)
 
   when defined macosx:
     removeFile("/etc/resolver/" & tld)
@@ -73,4 +75,4 @@ proc uninstall*(tld: string) =
     var exitCode = execCmd(removeCommand)
     if exitCode != 0:
       echo removeCommand & " failed with code " & $exitCode
-  quit()
+      quit(1)

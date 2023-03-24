@@ -23,7 +23,6 @@ proc writeHelp() =
   quit()
 
 proc main() =
-  var install, start, uninstall = false
   var
     ip :string
     port :int
@@ -33,35 +32,27 @@ proc main() =
     of cmdArgument:
       case key
       of "install":
-        install = true
+        (ip, port) = systemProbe()
+        install(ip, port, tld)
       of "start":
-        start = true
+        (ip, port) = systemProbe()
+        serve(ip, port, tld)
       of "uninstall":
-        uninstall = true
+        uninstall(tld)
       else:
         echo "unknown argument: ", key
+        writeHelp()
     of cmdLongOption, cmdShortOption:
       case key
       of "v", "version":
         writeVersion()
-        quit()
       of "h", "help":
         writeHelp()
       else:
         echo "unknown option: ", key
+        writeHelp()
     of cmdEnd:
       discard
-
-  if install or start:
-    (ip, port) = systemProbe()
-  if install:
-    install(ip, port, tld)
-  if uninstall:
-    uninstall(tld)
-  if start:
-    serve(ip, port, tld)
-  else:
-    writeHelp()
 
 when isMainModule:
   main()
