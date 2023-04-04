@@ -1,10 +1,11 @@
 import std/[strutils]
 when defined windows:
   import std/[osproc]
+else:
+  import std/[os, tempfiles]
+  import pkg/[sudo]
 when defined linux:
-  import std/[os, osproc]
-when defined macosx:
-  import std/[os]
+  import std/[osproc]
 
 proc systemProbe*(): (string, int) =
   var ip = "127.0.0.1"
@@ -29,50 +30,86 @@ proc systemProbe*(): (string, int) =
 
 proc install*(ip: string, port: int, tld: string) =
   when defined linux:
+    let network = createTempFile("lodns_", "")
+    var networkText: string
     if port == 53:
-      let networkText = "[Match]\nName=lodns0\n[Network]\nAddress=$#/32\nDomains= ~lo.\nDNS=$#\n" % [ip, ip]
-      writeFile("/etc/systemd/network/lodns0.network", networkText)
+      networkText = "[Match]\nName=lodns0\n[Network]\nAddress=$#/32\nDomains= ~lo.\nDNS=$#\n" % [ip, ip]
     else:
-      let networkText = "[Match]\nName=lodns0\n[Network]\nAddress=$#/32\nDomains= ~lo.\nDNS=$#:$#\n"  % [ip, ip, $port]
-      writeFile("/etc/systemd/network/lodns0.network", networkText)
+      networkText = "[Match]\nName=lodns0\n[Network]\nAddress=$#/32\nDomains= ~lo.\nDNS=$#:$#\n"  % [ip, ip, $port]
+    network.cfile.write networkText
+    close(network.cfile)
+    var exitCode = sudoCmd("mv " & network.path & " /etc/systemd/network/lodns0.network")
+    if exitCode != 0:
+      echo "creating file inside /etc/systemd/network dir failed with code " &
+          $exitCode
+      quit(1)
+    let netdev = createTempFile("lodns_", "")
     let netdevText = "[NetDev]\nName=lodns0\nKind=dummy\n"
-    writeFile("/etc/systemd/network/lodns0.netdev", netdevText)
-    var exitCode = execCmd("systemctl restart systemd-networkd.service")
+    netdev.cfile.write netdevText
+    close(netdev.cfile)
+    exitCode = sudoCmd("mv " & netdev.path & " /etc/systemd/network/lodns0.netdev")
+    if exitCode != 0:
+      echo "creating file inside /etc/systemd/network dir failed with code " &
+          $exitCode
+      quit(1)
+    exitCode = sudoCmd("systemctl restart systemd-networkd.service")
     if exitCode != 0:
       echo "systemctl restart systemd-networkd.service failed with code " & $exitCode
       quit(1)
 
   when defined macosx:
     if not dirExists("/etc/resolver"):
-      createDir("/etc/resolver")
+      let exitCode = sudoCmd("mkdir -p /etc/resolver")
+      if exitCode != 0:
+        echo "creating /etc/resolver dir failed with code " &
+            $exitCode
+        quit(1)
     let text = "nameserver $#\nport $#\n" % [ip, $port]
-    writeFile("/etc/resolver/" & tld, text)
+    let resolver = createTempFile("lodns_", "")
+    resolver.cfile.write text
+    close(resolver.cfile)
+    let exitCode = sudoCmd("mv " & resolver.path & " /etc/resolver/" & tld)
+    if exitCode != 0:
+      echo "creating file inside /etc/resolver dir failed with code " &
+          $exitCode
+      quit(1)
 
   when defined windows:
-    var addCommand = "Powershell.exe -Command \"Add-DnsClientNrptRule -Namespace '.$#' -NameServers '$#'\"" % [tld, ip]
-    var exitCode = execCmd(addCommand)
+    let addCommand = "Powershell.exe -Command \"Add-DnsClientNrptRule -Namespace '.$#' -NameServers '$#'\"" % [tld, ip]
+    let exitCode = execCmd(addCommand)
     if exitCode != 0:
       echo addCommand & " failed with code " & $exitCode
       quit(1)
 
 proc uninstall*(tld: string) =
   when defined linux:
-    removeFile("/etc/systemd/network/lodns0.network")
-    removeFile("/etc/systemd/network/lodns0.netdev")
-    var exitCode = execCmd("networkctl delete lodns0")
+    var exitCode = sudoCmd("/etc/systemd/network/lodns0.network")
+    if exitCode != 0:
+      echo "removing /etc/systemd/network/lodns0.network failed with code " & $exitCode
+      quit(1)
+    exitCode = sudoCmd("/etc/systemd/network/lodns0.netdev")
+    if exitCode != 0:
+      echo "removing /etc/systemd/network/lodns0.netdev failed with code " & $exitCode
+      quit(1)
+    exitCode = sudoCmd("networkctl delete lodns0")
     if exitCode != 0:
       echo "networkctl delete lodns0 failed with code " & $exitCode
-    exitCode = execCmd("systemctl restart systemd-networkd.service")
+      quit(1)
+    exitCode = sudoCmd("systemctl restart systemd-networkd.service")
     if exitCode != 0:
       echo "systemctl restart systemd-networkd.service failed with code " & $exitCode
       quit(1)
 
   when defined macosx:
-    removeFile("/etc/resolver/" & tld)
+    let exitCode = sudoCmd("rm -f /etc/resolver/" & tld)
+    if exitCode != 0:
+      echo "removing /etc/resolver/" & tld & " failed with code " & $exitCode
+      quit(1)
+
 
   when defined windows:
-    var removeCommand = "Powershell.exe -Command \"Get-DnsClientNrptRule | Where { $_.Namespace " & "-eq '.$#' } | Remove-DnsClientNrptRule -Force\"" % [tld]
-    var exitCode = execCmd(removeCommand)
+    let removeCommand = "Powershell.exe -Command \"Get-DnsClientNrptRule | Where { $_.Namespace " & "-eq '.$#' } | Remove-DnsClientNrptRule -Force\"" % [tld]
+    let exitCode = execCmd(removeCommand)
     if exitCode != 0:
       echo removeCommand & " failed with code " & $exitCode
       quit(1)

@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.6"
+version       = "0.1.7"
 author        = "vandot"
 description   = "Simple DNS server for local development"
 license       = "MIT"
@@ -17,7 +17,8 @@ skipDirs = @[
 
 # Dependencies
 requires "nim >= 1.6.6"
-requires "https://github.com/rockcavera/nim-dnsprotocol#head"
+requires "dnsprotocol"
+requires "https://github.com/vandot/nim-sudo#head"
 
 # Tasks
 proc updateNimbleVersion(ver: string) =

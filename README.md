@@ -19,9 +19,9 @@ Or `nimble install lodns`
 ## Configuration
 lodns comes preconfigured for all supported platforms to act as a secondary DNS server quired only for `.lo` domain.
 
-On MacOS and Linux you have to run with `sudo` to be able to configure the system
+On MacOS and Linux and to be able to configure the system provide sudo password when asked 
 ```
-sudo lodns install
+lodns install
 ```
 On Windows run inside elevated command prompt or Powershell
 ```
@@ -58,9 +58,9 @@ PING test.lo (127.0.0.1): 56 data bytes
 ```
 
 ## Uninstallation
-On MacOS and Linux run 
+On MacOS and Linux run and provide sudo password when asked
 ```
-sudo lodns uninstall
+lodns uninstall
 ```
 On Windows run inside elevated command prompt or Powershell
 ```
