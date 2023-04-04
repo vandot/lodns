@@ -22,10 +22,10 @@ jobs:
         run: |
           nimble build -r -d:release --opt:size
           mv build/lodns{,-linux-amd64}
-      - name: Build Darwin
-        run: |
-          nimxc c --target=macosx-arm64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-darwin-arm64 -f src/lodns.nim
-          nimxc c --target=macosx-amd64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-darwin-amd64 -f src/lodns.nim
+      # - name: Build Darwin
+      #   run: |
+      #     nimxc c --target=macosx-arm64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-darwin-arm64 -f src/lodns.nim
+      #     nimxc c --target=macosx-amd64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-darwin-amd64 -f src/lodns.nim
       - name: Build Windows
         run: |
           nimxc c --target=windows-amd64 -d:release -d:NimblePkgVersion:$(nimble --silent version) --opt:size --out:./build/lodns-windows-amd64.exe -f src/lodns.nim
