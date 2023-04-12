@@ -38,20 +38,22 @@ proc install*(ip: string, port: int, tld: string) =
       networkText = "[Match]\nName=lodns0\n[Network]\nAddress=$#/32\nDomains= ~lo.\nDNS=$#:$#\n"  % [ip, ip, $port]
     network.cfile.write networkText
     close(network.cfile)
-    var exitCode = sudoCmd("mv " & network.path & " /etc/systemd/network/lodns0.network")
+    var exitCode = sudoCmd("install -m 644 " & network.path & " /etc/systemd/network/lodns0.network")
     if exitCode != 0:
       echo "creating file inside /etc/systemd/network dir failed with code " &
           $exitCode
       quit(1)
+    removeFile(network.path)
     let netdev = createTempFile("lodns_", "")
     let netdevText = "[NetDev]\nName=lodns0\nKind=dummy\n"
     netdev.cfile.write netdevText
     close(netdev.cfile)
-    exitCode = sudoCmd("mv " & netdev.path & " /etc/systemd/network/lodns0.netdev")
+    exitCode = sudoCmd("install -m 644 " & netdev.path & " /etc/systemd/network/lodns0.netdev")
     if exitCode != 0:
       echo "creating file inside /etc/systemd/network dir failed with code " &
           $exitCode
       quit(1)
+    removeFile(netdev.path)
     exitCode = sudoCmd("systemctl restart systemd-networkd.service")
     if exitCode != 0:
       echo "systemctl restart systemd-networkd.service failed with code " & $exitCode
@@ -83,11 +85,11 @@ proc install*(ip: string, port: int, tld: string) =
 
 proc uninstall*(tld: string) =
   when defined linux:
-    var exitCode = sudoCmd("/etc/systemd/network/lodns0.network")
+    var exitCode = sudoCmd("rm /etc/systemd/network/lodns0.network")
     if exitCode != 0:
       echo "removing /etc/systemd/network/lodns0.network failed with code " & $exitCode
       quit(1)
-    exitCode = sudoCmd("/etc/systemd/network/lodns0.netdev")
+    exitCode = sudoCmd("rm /etc/systemd/network/lodns0.netdev")
     if exitCode != 0:
       echo "removing /etc/systemd/network/lodns0.netdev failed with code " & $exitCode
       quit(1)
