@@ -12,7 +12,14 @@ lodns will act only as a secondary DNS server dedicated to `.lo` TLD on every pl
 ## Installation
 Download correct binary from the latest [release](https://github.com/vandot/lodns/releases) and place it somewhere in the PATH.
 
-Or `nimble install lodns`
+Or pipe the install script to bash
+```
+curl -sSfL https://raw.githubusercontent.com/vandot/lodns/main/install.sh | bash
+```
+Or build it locally
+```
+nimble install lodns
+```
 
 *Note: lodns support for Linux relies on systemd and systemd-resolved*
 
