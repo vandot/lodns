@@ -27,7 +27,7 @@ proc serve*(ip: string, port: int, tld: string) =
         else:
             log("error", "type=", message.questions[0].qtype, " domain=", domain, " error=unsupported-type")
             rr = initResourceRecord(domain, Type.NULL, Class.IN, 0'i32, 0'u16, RDataNULL())
-        if rsplit(domain, ".", maxsplit=2)[1] != tld:
+        if not endsWith(domain, tld & "."):
             log("error", "type=", message.questions[0].qtype, " domain=", domain, " error=unsupported-domain")
             rr = initResourceRecord(domain, Type.NULL, Class.IN, 0'i32, 0'u16, RDataNULL())
         let header = initHeader(message.header.id, QR.Response)
